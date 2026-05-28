@@ -6,6 +6,7 @@ import { contactTools, handleContactTool } from "./tools/contacts.js";
 import { conversationTools, handleConversationTool } from "./tools/conversations.js";
 import { opportunityTools, handleOpportunityTool } from "./tools/opportunities.js";
 import { calendarTools, handleCalendarTool } from "./tools/calendars.js";
+import { workflowTools, handleWorkflowTool } from "./tools/workflows.js";
 
 const apiKey = process.env.GHL_API_KEY;
 if (!apiKey) {
@@ -25,6 +26,7 @@ const allTools = [
   ...conversationTools,
   ...opportunityTools,
   ...calendarTools,
+  ...workflowTools,
 ];
 
 server.setRequestHandler(ListToolsRequestSchema, async () => ({ tools: allTools }));
@@ -44,6 +46,9 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
     }
     if (calendarTools.some((t) => t.name === name)) {
       return await handleCalendarTool(client, name, args as Record<string, any>);
+    }
+    if (workflowTools.some((t) => t.name === name)) {
+      return await handleWorkflowTool(client, name, args as Record<string, any>);
     }
     throw new Error(`Unknown tool: ${name}`);
   } catch (error: any) {
